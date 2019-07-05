@@ -1,0 +1,23 @@
+{
+  "name": "domino-solver",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "Meno Abels",
+  "license": "AFL-2.0",
+  "scripts": {
+    "clean": "rimraf dist node_modules",
+    "build": "tsc",
+    "test": "jest -c jest.unit.js",
+    "lint": "tslint --project ."
+  },
+  "devDependencies": {
+    "rimraf": "*",
+    "@types/jest": "^24.0.12",
+    "prettier": "1.15.3",
+    "jest": "^24.8.0",
+    "jest-cli": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "ts-lint": "^4.5.1",
+    "typescript": "^3.4.5"
+  }
+}
