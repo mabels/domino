@@ -1,6 +1,13 @@
 import { Turned } from './turned';
 
-export class Stone {
+export interface StoneObj {
+  readonly id: string;
+  readonly turned: Turned;
+  readonly left: number;
+  readonly right: number;
+}
+
+export class Stone implements StoneObj {
   public readonly id: string;
   public readonly turned: Turned;
   public readonly left: number;
@@ -20,13 +27,7 @@ export class Stone {
   }
 
   public isStone(left: number, right: number) {
-    if (this.left == left && this.right == right) {
-      return true;
-    }
-    if (this.left == right && this.right == left) {
-      return true;
-    }
-    return false;
+    return (this.left == left && this.right == right) || (this.left == right && this.right == left);
   }
 
   public turnTo(turns: (my: Stone) => Stone) {
@@ -46,6 +47,15 @@ export class Stone {
   }
 
   public equal(o: Stone) {
-    return this.idString() == o.idString();
+    return this.idString() === o.idString();
+  }
+
+  public get asObj(): StoneObj {
+    return {
+      id: this.id,
+      turned: this.turned,
+      left: this.left,
+      right: this.right,
+    };
   }
 }

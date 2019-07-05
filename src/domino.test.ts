@@ -216,4 +216,15 @@ test(`solvable stones even`, () => {
   ]);
 });
 
+test(`not solvable stones but parcial`, () => {
+  const stones = Stones.create([
+    Stone.create('i1', Turned.NO, 1, 2),
+    Stone.create('i2', Turned.NO, 2, 4),
+    Stone.create('i3', Turned.NO, 4, 2),
+    Stone.create('i4', Turned.NO, 2, 1),
+    Stone.create('i5', Turned.NO, 9, 9),
+  ]);
+  expect(Domino.solve(stones, 1, 1).asObj).toEqual([]);
+});
+
 // missing the test case for multiple solutions
