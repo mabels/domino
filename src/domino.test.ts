@@ -97,8 +97,7 @@ test('find combination list should be more than one', () => {
 });
 
 test(`not solvable stones empty`, () => {
-  const stones = Stones.create([
-  ]);
+  const stones = Stones.create([]);
   expect(Domino.solve(stones, 1, 2).asObj).toEqual([]);
 });
 
@@ -227,4 +226,34 @@ test(`not solvable stones but parcial`, () => {
   expect(Domino.solve(stones, 1, 1).asObj).toEqual([]);
 });
 
-// missing the test case for multiple solutions
+test('singleton input = singleton output', () => {
+  const stones = Stones.fromTuples([
+    ['i1', 1, 1]
+  ]);
+
+  expect(Domino.solve(stones, 1, 1).toTuples()).toEqual([
+    [['i1', 1, 1]]
+  ]);
+});
+
+test('singleton that can\'t be chained', () => {
+  const stones = Stones.fromTuples([
+    ['i1', 1, 2]
+  ]);
+
+  expect(Domino.solve(stones, 1, 2).toTuples()).toEqual([
+    [['i1', 1, 2]]
+  ]);
+});
+
+test('three elements', () => {
+  const stones = Stones.fromTuples([
+    ['1', 1, 2], 
+    ['2', 3, 1], 
+    ['3', 2, 3]
+  ]);
+
+  expect(Domino.solve(stones, 1, 2).toTuples()).toEqual([
+    [['1', 1, 2], ['3', 2, 3], ['2', 3, 1]]
+  ]);
+});

@@ -16,6 +16,11 @@ export class Stone implements StoneObj {
   public static create(id: string, turned: Turned, left: number, right: number) {
     return new Stone(id, turned, left, right);
   }
+
+  public static fromTuple([id, left, right]: [string, number, number]): Stone {
+    return new Stone(id, Turned.NO, left, right)
+  }
+
   private constructor(id: string, turned: Turned, left: number, right: number) {
     this.left = left;
     this.right = right;
@@ -36,6 +41,10 @@ export class Stone implements StoneObj {
 
   public toString() {
     return `${this.left}|${this.right}`;
+  }
+
+  public toTuple(): [string, number, number] {
+    return [this.id, this.left, this.right];
   }
 
   public idString() {

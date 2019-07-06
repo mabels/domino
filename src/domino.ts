@@ -40,4 +40,7 @@ export class Domino {
     return this.chains.map(sts => sts.asObj);
   }
 
+  public toTuples(): [string, number, number][][] {
+    return this.chains.map(chain => chain.toTuples());
+  }
 }
