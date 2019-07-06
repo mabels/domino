@@ -68,6 +68,10 @@ export class Stones {
     return new Stones(stones);
   }
 
+  public static fromTuples(values: [string, number, number][]): Stones {
+    return new Stones(values.map(Stone.fromTuple));
+  }
+
   private constructor(stones: Stone[]) {
     this.stones = stones;
   }
@@ -79,6 +83,10 @@ export class Stones {
   // only used for testing
   public get asObj(): StoneObj[] {
     return this.stones.map(i => i.asObj)
+  }
+
+  public toTuples(): [string, number, number][] {
+    return this.stones.map(i => i.toTuple());
   }
 
   public firstLast(left: number, right: number): Stones[] {
