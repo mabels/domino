@@ -17,9 +17,9 @@ export class Stone implements StoneObj {
     return new Stone(id, turned, left, right);
   }
 
-  public static fromTuple([id, left, right]: [string, number, number]): Stone {
-    return new Stone(id, Turned.NO, left, right)
-  }
+  // public static fromTuple([id, left, right]: [string, number, number]): Stone {
+  //   return new Stone(id, Turned.NO, left, right)
+  // }
 
   private constructor(id: string, turned: Turned, left: number, right: number) {
     this.left = left;

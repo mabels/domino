@@ -1,5 +1,6 @@
 import { Stone, StoneObj } from './stone';
 import { Turned } from './turned';
+import { stringLiteral } from '@babel/types';
 
 function makeStoneLeft(left: number) {
   return (stone: Stone) => {
@@ -22,32 +23,46 @@ function makeStoneRight(right: number) {
 interface UniqTurn {
   readonly selected: Stone[];
   readonly rest: Stone[];
+  readonly uniq: Map<string, Stone[]>;
 }
 
-function insGetValue(uniq: Map<string, Stone[]>, id: string): Stone[] {
+
+interface LeftAndRightStones {
+  left?: Stone;
+  right?: Stone;
+  stones: Stone[];
+}
+
+function insGetStones(uniq: Map<string, LeftAndRightStones>, id: string): LeftAndRightStones {
   let ustones = uniq.get(id)
   if (!ustones) {
-    ustones = [];
+    ustones = { stones: [] };
     uniq.set(id, ustones);
   }
   return ustones;
 }
 
+function byStoneId(stones: Stone[]) {
+  return stones.reduce((uniq, stone) => {
+    const lars = insGetStones(uniq, stone.idString());
+    lars.stones.push(stone);
+    return uniq;
+  }, new Map<string, LeftAndRightStones>());
+}
+
+function setupLeftAndRight(lars: LeftAndRightStones) {
+
+}
+
 function uniqTurn(nr: number, makeTurnTo: (my: Stone) => Stone, stones: Stone[]): UniqTurn {
+  const uniq = byStoneId(stones);
   const rest: Stone[] = [];
-  // might be a performance problem;
-  const uniq = new Map<string, Stone[]>();
-  stones.forEach(stone => {
-    if (!stone.hasNumber(nr)) {
-      // is an other stone not our search nr
-      rest.push(stone);
-      return;
-    }
-    // collect all stones which has our number
-    insGetValue(uniq, stone.idString()).push(stone);
-  });
   const selected: Stone[] = [];
   for (let ustones of uniq.values()) {
+    if (!ustones[0].hasNumber(nr)) {
+      Array.prototype.push.apply(rest, ustones);
+      continue;
+    }
     // find optimial stone, which do not needed to turn
     // might be uncool uses object reference equality
     const idx = ustones.findIndex(stone => makeTurnTo(stone) === stone);
@@ -58,7 +73,7 @@ function uniqTurn(nr: number, makeTurnTo: (my: Stone) => Stone, stones: Stone[])
     // in place append
     Array.prototype.push.apply(rest, ustones);
   }
-  return { selected, rest };
+  return { selected, rest, uniq };
 }
 
 export class Stones {
@@ -68,8 +83,8 @@ export class Stones {
     return new Stones(stones);
   }
 
-  public static fromTuples(values: [string, number, number][]): Stones {
-    return new Stones(values.map(Stone.fromTuple));
+  public static fromTuples(values: [number, number][]): Stones {
+    return new Stones(values.map((v, i) => Stone.create(`i${i}`, Turned.NO, v[0], v[1])));
   }
 
   private constructor(stones: Stone[]) {
@@ -107,7 +122,14 @@ export class Stones {
     // so that i could use the first.right, last.left value
     // to recursive solve to an chain
     const leftStones = uniqTurn(left, makeStoneLeft(left), this.stones);
-    const rightStones = uniqTurn(right, makeStoneRight(right), leftStones.rest);
+    let rightStones: UniqTurn;
+    if (left !== right) {
+      rightStones = uniqTurn(right, makeStoneRight(right), leftStones.rest);
+    } else {
+      rightStones = uniqTurn(right, makeStoneRight(right), this.stones);
+    }
+    console.log('XXXX-Left:', leftStones);
+    console.log('XXXX-Right:', rightStones);
     const ret: Stones[] = [];
     leftStones.selected.forEach(ls => {
       rightStones.selected.forEach(rs => {
