@@ -1,16 +1,20 @@
 namespace Domino
-// type StoneObj = {
-//   id: string
-//   turned: Turned
-//   left: int
-//   right: int
-// }
+
+type StoneObj = {
+  id: string
+  turned: Turned
+  left: int
+  right: int
+}
 
 type Stone = class
   val id : string
   val turned : Domino.Turned
   val left : int
   val right : int
+
+  static member create(id0: string, turned0: Turned, left0: int, right0: int) =
+    new Stone(id0, turned0, left0, right0)
 
   new (id0: string, turned0: Turned, left0: int, right0: int) = {
     id = id0;
@@ -37,11 +41,11 @@ type Stone = class
 
   member this.equal(o: Stone) = this.idString.Equals(o.idString)
 
-  // member this.asObj() y StoneObj = {
-  //     id: this.id,
-  //     turned: this.turned,
-  //     left: this.left,
-  //     right: this.right,
-  // }
+  member this.asObj(): StoneObj = {
+      id = this.id;
+      turned = this.turned;
+      left = this.left,
+      right = this.right
+  }
 
 end

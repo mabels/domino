@@ -3,18 +3,17 @@ namespace Domino
 module Stones =
   let makeStoneLeft(left: int) = function
     | (stone: Stone) ->
-        if (stone.left.Equals(left)) then
-          stone
-        else
-          Stone(stone.id, Turned.YES, left, stone.left)
+      if (stone.left.Equals(left)) then
+        stone
+      else
+        Stone.create(stone.id, Turned.YES, left, stone.left)
 
   let makeStoneRight(right: int) = function
     | (stone: Stone) ->
       if (stone.right.Equals(right)) then
         stone
       else
-        Stone(stone.id, Turned.YES, stone.right, right)
-
+        Stone.create(stone.id, Turned.YES, stone.right, right)
 
   type UniqTurn = {
     selected: Stone[]
@@ -75,9 +74,7 @@ type Stones = class
   member this.asStones(): Stone[] = this.stones
 
   // only used for testing
-  // member asObj(): StoneObj[] {
-  //   return this.stones.map(i => i.asObj)
-  // }
+  member asObj(): StoneObj[] = this.stones.map(i => i.asObj())
 
   member this.firstLast(left: int, right: int): Stones[] =
     if (this.stones.Length.Equals(0)) then
