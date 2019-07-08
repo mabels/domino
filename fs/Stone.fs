@@ -1,42 +1,47 @@
-open Turned
+namespace Domino
+// type StoneObj = {
+//   id: string
+//   turned: Turned
+//   left: int
+//   right: int
+// }
 
-type StoneObj = {
-  id: string;
-  turned: Turned;
-  left: number;
-  right: number;
-}
+type Stone = class
+  val id : string
+  val turned : Domino.Turned
+  val left : int
+  val right : int
 
-type Stone(id0: string, turned0: Turned, left0: number, right0: number) = {
-  let id = id0
-  let turned = turned0
-  let left = left0
-  let right = right0
-
-  hasNumber (n: number) x = n == this.left || n == this.right;
-
-  isStone (left: number, right: number) x =
-    (this.left == left && this.right == right) ||
-    (this.left == right && this.right == left)
-
-  turnTo (turns: (my: Stone) => Stone) x = turns(this)
-
-  toString () x = `${this.left}|${this.right}`
-
-  idString() x =
-    if (this.left < this.right) {
-      return `${this.left}|${this.right}`;
-    } else {
-      return `${this.right}|${this.left}`;
-    }
-
-
-  equal(o: Stone): x = this.idString() == o.idString()
-
- asObj() y StoneObj = {
-      id: this.id,
-      turned: this.turned,
-      left: this.left,
-      right: this.right,
+  new (id0: string, turned0: Turned, left0: int, right0: int) = {
+    id = id0;
+    turned = turned0;
+    left = left0;
+    right = right0
   }
-}
+
+  member this.hasNumber (n: int) = n.Equals(this.left) || n.Equals(this.right);
+
+  member this.isStone (left: int, right: int) =
+    (this.left.Equals(left) && this.right.Equals(right)) ||
+    (this.left.Equals(right) && this.right.Equals(left))
+
+  member this.turnTo(turns: (Stone) -> Stone) = turns(this)
+
+  member this.toString = sprintf "%d|%d" this.left this.right
+
+  member this.idString =
+    if this.left < this.right then
+      sprintf "%d|%d" this.left this.right
+    else
+      sprintf "%d|%d" this.right this.left
+
+  member this.equal(o: Stone) = this.idString.Equals(o.idString)
+
+  // member this.asObj() y StoneObj = {
+  //     id: this.id,
+  //     turned: this.turned,
+  //     left: this.left,
+  //     right: this.right,
+  // }
+
+end

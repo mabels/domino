@@ -1,134 +1,126 @@
-open Stone
-open Turned
+namespace Domino
 
-let makeStoneLeft(left: number) = (stone: Stone) =
-    if (stone.left === left) {
-      return stone;
-    }
-    Stone(stone.id, Turned.YES, left, stone.left);
+module Stones =
+  let makeStoneLeft(left: int) = function
+    | (stone: Stone) ->
+        if (stone.left.Equals(left)) then
+          stone
+        else
+          Stone(stone.id, Turned.YES, left, stone.left)
 
-let makeStoneRight(right: number) = (stone: Stone) =
-    if (stone.right === right) {
-      return stone;
-    }
-    Stone(stone.id, Turned.YES, stone.right, right);
+  let makeStoneRight(right: int) = function
+    | (stone: Stone) ->
+      if (stone.right.Equals(right)) then
+        stone
+      else
+        Stone(stone.id, Turned.YES, stone.right, right)
 
-type UniqTurn = {
-  readonly selected: Stone[];
-  readonly rest: Stone[];
-}
 
-let insGetValue(uniq: Map<string, Stone[]>, id: string) x =
-  let ustones = uniq.get(id)
-  if (!ustones) {
-    ustones = [];
-    uniq.set(id, ustones);
-  }
-  return ustones;
-
-function uniqTurn(nr: number, makeTurnTo: (my: Stone) => Stone, stones: Stone[]): UniqTurn {
-  const rest: Stone[] = [];
-  // might be a performance problem;
-  const uniq = new Map<string, Stone[]>();
-  stones.forEach(stone => {
-    if (!stone.hasNumber(nr)) {
-      // is an other stone not our search nr
-      rest.push(stone);
-      return;
-    }
-    // collect all stones which has our number
-    insGetValue(uniq, stone.idString()).push(stone);
-  });
-  const selected: Stone[] = [];
-  for (let ustones of uniq.values()) {
-    // find optimial stone, which do not needed to turn
-    // might be uncool uses object reference equality
-    const idx = ustones.findIndex(stone => makeTurnTo(stone) === stone);
-    // this are the stones which are used
-    // if no optimal just use the first
-    selected.push(makeTurnTo(ustones.splice(idx < 0 ? 0 : idx, 1)[0]));
-    // this are the stones which could be used for on the right side
-    // in place append
-    Array.prototype.push.apply(rest, ustones);
-  }
-  return { selected, rest };
-}
-
-export class Stones {
-  private readonly stones: Stone[];
-
-  public static create(stones: Stone[]) {
-    return new Stones(stones);
+  type UniqTurn = {
+    selected: Stone[]
+    rest: Stone[]
   }
 
-  private constructor(stones: Stone[]) {
-    this.stones = stones;
+  let insGetValue(uniq: Map<string, Stone[]>, id: string) =
+    if (uniq.ContainsKey(id)) then
+      uniq.[id]
+    else
+      let ustones: Stone[] = [||]
+      uniq.Add(id, ustones);
+      ustones
+
+  let uniqTurn(nr: int, makeTurnTo: (Stone) -> Stone, stones: Stone[]) =
+    { selected = [||]; rest = [||] }
+    // let rest: Stone[] = []
+    // // might be a performance problem;
+    // let uniq = new Map<string, Stone[]>()
+    // stones.iter(fun (stone) ->
+    //   if (!stone.hasNumber(nr)) then
+    //     // is an other stone not our search nr
+    //     rest.push(stone)
+    //   else
+    //   // collect all stones which has our number
+    //     insGetValue(uniq, stone.idString()).push(stone);
+    // )
+    // let selected: Stone[] = [];
+    // uniq.values.iter(fun (stones) ->
+    //   // find optimial stone, which do not needed to turn
+    //   // might be uncool uses object reference equality
+    //   let idx = ustones.findIndex(stone => makeTurnTo(stone) == stone)
+    //   // this are the stones which are used
+    //   // if no optimal just use the first
+    //   // let toDel = if idx < 0 then 0
+    //   //             else idx
+    //   // selected.push(makeTurnTo(ustones.remove()
+
+    //   // .splice(hhh
+    //   //    if idx < 0 then 0 else idx
+    //   //  , 1)[0]));
+    //   // this are the stones which could be used for on the right side
+    //   // in place append
+    //   rest.append(ustones)
+    // )
+    // { selected, rest };
+
+
+type Stones = class
+  val stones: Stone[];
+
+  static member create(stones: Stone[]) = new Stones(stones);
+
+  new (stones0: Stone[]) = {
+    stones = stones0;
   }
 
-  public get asStones(): Stone[] {
-    return this.stones;
-  }
+  member this.asStones(): Stone[] = this.stones
 
   // only used for testing
-  public get asObj(): StoneObj[] {
-    return this.stones.map(i => i.asObj)
-  }
+  // member asObj(): StoneObj[] {
+  //   return this.stones.map(i => i.asObj)
+  // }
 
-  public firstLast(left: number, right: number): Stones[] {
-    if (this.stones.length === 0) {
+  member this.firstLast(left: int, right: int): Stones[] =
+    if (this.stones.Length.Equals(0)) then
       // empty solution
-      return [];
-    }
-    if (this.stones.length === 1) {
+      [||]
+    elif (this.stones.Length.Equals(1)) then
       // single Stone solution
-      if (this.stones[0].isStone(left, right)) {
-        return [Stones.create([this.stones[0].turnTo(makeStoneLeft(left))])];
-      }
-      return [];
-    }
-    // possible right and left stones
-    // the same stones has to remove
-    // the stones will be turned
-    // so that i could use the first.right, last.left value
-    // to recursive solve to an chain
-    const leftStones = uniqTurn(left, makeStoneLeft(left), this.stones);
-    const rightStones = uniqTurn(right, makeStoneRight(right), leftStones.rest);
-    const ret: Stones[] = [];
-    leftStones.selected.forEach(ls => {
-      rightStones.selected.forEach(rs => {
-        if (ls.id === rs.id) {
-          // skip the same stone
-          return;
-        }
-        ret.push(
-          Stones.create([
-            ls,
-            // remove ls and rs from list
-            ...this.stones.filter(i => i.id !== ls.id && i.id !== rs.id),
-            rs
-          ])
-        );
-      });
-    });
-    return ret;
-  }
+      if (this.stones.[0].isStone(left, right)) then
+        [|Stones.create([|this.stones.[0].turnTo(Stones.makeStoneLeft(left))|])|];
+      else
+        [||]
+    else
+      // possible right and left stones
+      // the same stones has to remove
+      // the stones will be turned
+      // so that i could use the first.right, last.left value
+      // to recursive solve to an chain
+      let leftStones = Stones.uniqTurn(left, Stones.makeStoneLeft(left), this.stones)
+      let rightStones = Stones.uniqTurn(right, Stones.makeStoneRight(right), leftStones.rest)
+      let ret: Stones[] = [||]
+      // leftStones.selected.Iter(fun ls -> {
+      //   rightStones.selected.Iter(fun rs -> {
+      //     if (ls.id != rs.id) then
+      //       ret.push(
+      //         Stones.create([
+      //           ls,
+      //           // remove ls and rs from list
+      //           this.stones.filter(i => i.id !== ls.id && i.id !== rs.id),
+      //           rs
+      //         ])
+      //       )
+      //   });
+      // });
+      ret
 
-  public get first() {
-    return this.stones[0];
-  }
+  member this.first() = this.stones.[0]
 
   // this is the next solving target if first and last
   // our solved stones
-  public get mid() {
-    return new Stones(this.stones.slice(1, -1));
-  }
+  member this.mid() = new Stones(this.stones.[1..this.stones.Length - 1])
 
-  public get last() {
-    return this.stones[this.stones.length - 1];
-  }
+  member this.last() = this.stones.[this.stones.Length - 1]
 
-  public get length() {
-    return this.stones.length;
-  }
+  member this.length() = this.stones.Length
 
-}
+end

@@ -1,7 +1,11 @@
 ﻿// Learn more about F# at http://fsharp.org
+open NUnit.Framework
 
 open System
-open Turned
+
+[<Test>]
+let ``When 2 is added to 2 expect 4``() =
+    Assert.AreEqual(4, 2+2)
 
 [<EntryPoint>]
 let main argv =

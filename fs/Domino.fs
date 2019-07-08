@@ -1,35 +1,42 @@
-open Stones
+namespace Domino
 
-let dominoSolve(stones: Stones, left: number, right: number) x =
-  let solved = stones.firstLast(left, right);
-  if (solved.length === 1) {
-    if (solved[0].length === 1) {
-      return solved;
-    }
-    if (solved[0].length === 2) {
-      // this is the root rule of domino
-      if (solved[0].first.right === solved[0].last.left) {
-        return solved;
-      } else {
-        return [];
-      }
-    }
+module Domino =
+  let dominoSolve(stones: Stones, left: int, right: int) =
+    let solved = stones.firstLast(left, right)
+    if (solved.Length.Equals(1)) then
+      if (solved.[0].length().Equals(1)) then
+        solved
+      elif (solved.[0].length().Equals(2)) then
+        // this is the root rule of domino
+        if (solved.[0].first().right.Equals(solved.[0].last().left)) then
+          solved
+        else
+          [||]
+      else
+        [||]
+    else
+      [||]
+      // solved |> Array.reduce(fun (accu, ustones) ->
+      //   let tmp = Domino.dominoSolve(ustones.mid, ustones.first.right, ustones.last.left);
+      //   tmp.iter(fun (sts) ->
+      //     accu.push(Stones.create([ustones.first,
+      //       // ...sts.asStones,
+      //       ustones.last]));
+      //   )
+      //   accu
+      // )
+
+
+type Domino = class
+  val chains: Stones[]
+
+  new (stones: Stones[]) = {
+    chains = stones
   }
-  return solved.reduce<Stones[]>((accu, ustones) => {
-    const tmp = dominoSolve(ustones.mid, ustones.first.right, ustones.last.left);
-    tmp.forEach((sts) => {
-      accu.push(Stones.create([ustones.first, ...sts.asStones, ustones.last]));
-    });
-    return accu;
-  }, []);
 
+  static member solve(stones: Stones, left: int, right: int) =
+    Domino(Domino.dominoSolve(stones, left, right))
 
-type Domino(stones: Stones[]) = {
-  let chains: Stones[] = stones;
+  // member this.asObj() = this.chains.map(fun sts -> sts.asObj)
 
-  static solve(stones: Stones, left: number, right: number) = Domino(dominoSolve(stones, left, right))
-
-  member asObj() x = this.chains.map(sts => sts.asObj)
-
-}
-
+end

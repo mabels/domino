@@ -1,2 +1,4 @@
-
-type Turned = NO = 'NO' | YES = 'YES'
+namespace Domino
+  type Turned =
+    | NO = 'N'
+    | YES = 'Y'
